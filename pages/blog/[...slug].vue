@@ -8,42 +8,43 @@
   <br />
   <main>
     <nuxt-link :to="localePath('blog')">Back</nuxt-link>
-    <ContentRenderer :value="page" />
+    <!-- <ContentRenderer :value="page" /> -->
+    <main v-if="data">
+      <ContentRenderer v-if="data" :value="data" />
+    </main>
   </main>
 </template>
 
 <script setup lang="ts">
-const i18n = useI18n();
+import type { ParsedContent } from "@nuxt/content/dist/runtime/types";
+
 const localePath = useLocalePath();
-const { locale } = useI18n();
-const route = useRoute();
-const article = route.fullPath.split("/").pop();
 const switchLocalePath = useSwitchLocalePath();
 
-const { data: page } = await useAsyncData(
-  `${article}-${i18n.locale.value}`,
-  () => {
-    console.log(`loading ${i18n.locale.value}`);
-    const data = queryContent(i18n.locale.value, `blog/${article}`)
-      .findOne()
-      .then((item: any) => {
-        return item;
-      })
-      .catch((e: any) => {
-        console.error(e);
-        if (e) {
-          console.log("fetching default");
-          return queryContent(`blog/${article}`)
-            .findOne()
-            .then((item: any) => item)
-            .catch((e: any) => console.error(e));
-        }
-      });
+const route = useRoute();
+const article = route.fullPath.split('/').pop();
+const { locale } = useI18n();
 
-    return data;
-  },
-  {
-    watch: [locale],
-  }
+function redirect404() {
+  const router = useRouter();
+  router.push("/404");
+}
+
+interface ContentError extends Error {
+  statusCode: number;
+}
+
+const { data, error } = await useAsyncData<
+  ParsedContent,
+  ContentError
+>(`aricle:${useRoute().fullPath}`, () =>
+  queryContent("/blog")
+    .where({ _locale: locale.value, _path: `/blog/${article}` })
+    .findOne()
 );
+
+if (error.value && error.value.statusCode === 404) {
+  redirect404();
+}
 </script>
+  

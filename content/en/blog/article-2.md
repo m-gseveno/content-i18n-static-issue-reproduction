@@ -1,7 +1,7 @@
 ---
 uid: article-2
 title: Title 2
-intro: Lorem Ipsum
+description: Lorem Ipsum
 published: 20230502
 ---
 

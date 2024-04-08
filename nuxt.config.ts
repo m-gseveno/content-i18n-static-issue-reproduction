@@ -1,17 +1,29 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["@nuxt/content", "@nuxtjs/i18n"],
+  modules: ["@nuxtjs/i18n", "@nuxt/content"],
   nitro: {
     prerender: {
       crawlLinks: true,
       failOnError: false,
     },
   },
+  content: {
+    defaultLocale: "en",
+    locales: [
+      "en",
+      "es",
+      "fr",
+    ],
+  },
   i18n: {
     lazy: true,
     langDir: "locales/",
     defaultLocale: "en",
+    strategy: 'prefix_except_default',
+    detectBrowserLanguage:{
+      useCookie: false
+    },
     locales: [
       {
         code: "en",
@@ -29,7 +41,7 @@ export default defineNuxtConfig({
         code: "es",
         iso: "es",
         name: "Spanish",
-        file: "fr-FR.json",
+        file: "es-ES.json",
       },
     ],
   },
